@@ -1,0 +1,42 @@
+/* Center the div containing the button */
+.center-div {
+    display: flex;
+    flex-direction: column; /* 세로 방향으로 배치 */
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* 전체 뷰포트 높이 */
+}
+
+/* Increase the button size */
+.btn-primary {
+    font-size: 1.5rem; /* 글꼴 크기 증가 */
+    padding: 1rem 2rem; /* 패딩 증가 */
+    margin-top: 10px;
+}
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+        }
+        .login-container {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+        h2 {
+            margin-bottom: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .btn-primary {
+            width: 100%;
+        }
+#ogin_form{
+	margin-top: 10%;
+	margin-left: 10%;
+	padding: 3%;
+}
