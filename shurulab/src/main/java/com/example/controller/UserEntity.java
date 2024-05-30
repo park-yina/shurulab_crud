@@ -1,7 +1,9 @@
 package com.example.controller;
 
+import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -36,8 +38,8 @@ public class UserEntity {
     @Size(min = 3, max = 9, message = "닉네임은 3~9자 이하로 입력해주세요.")
     @Pattern(regexp = "^[^\\{\\}\\[\\]/?.,;:|)*~`!^\\-_+<>@#$%&\\\\=('\"]*$", message = "닉네임에 특수문자를 사용할 수 없습니다.")
     private String nickname;
-    
-    @Lob
-    @Column(nullable = true)
-    private byte[] profile; // 프로필 사진은 일단 이렇게 바이트로 한다는데 맞나prSTR
+    @Lob 
+    @Basic(fetch = FetchType.LAZY)
+    @Column(length=100000)
+    private byte[] profile; // 프로필 사진은 일단 이렇게 바이트로 한다는데 맞나
 }

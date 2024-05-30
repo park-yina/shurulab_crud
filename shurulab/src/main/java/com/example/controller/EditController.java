@@ -2,6 +2,9 @@ package com.example.controller;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+
+import java.io.IOException;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.dto.EditPasswordDTO;
 import com.example.dto.UserEditDTO;
@@ -78,7 +82,21 @@ public class EditController {
             userService.updatePassword(String.valueOf(username),editPasswordDTO.getPassword());
         }
         return "redirect:/";
-    	
+    }
+    @GetMapping("/profile")
+    public String profile() {
+        return "profile_edit";
+    }
+    @PostMapping("/upload")
+    public String handleFileUpload(@RequestParam("profileImage") MultipartFile file, Model model,HttpSession session) {
+        try {
+            Object username = session.getAttribute("username");
+            userService.saveProfileImage(String.valueOf(username),file);
+        } catch (IOException e) {
+            model.addAttribute("errorMessage", "파일 업로드 중 오류가 발생했습니다.");
+            return "profile_edit";
+        }
+        return "redirect:/";
     }
     
 }

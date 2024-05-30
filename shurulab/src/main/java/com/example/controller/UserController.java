@@ -8,12 +8,18 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.dto.UserCreateDTO;
 import com.example.dto.UserLoginDTO;
 import com.example.dto.UserMypageDTO;
 
 import jakarta.validation.Valid;
+
+import java.io.IOException;
+import java.util.Base64;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,14 +36,14 @@ public class UserController {
         model.addAttribute("userCreateDTO", new UserCreateDTO());
         return "sign";
     }
-
     @PostMapping("/user/signup")
-    public String postSignup(@Valid UserCreateDTO userCreateDTO, BindingResult bindingResult) {
+    public String postSignup(@Valid UserCreateDTO userCreateDTO, BindingResult bindingResult, @RequestParam("profileImage") MultipartFile file) throws IOException {
         if (bindingResult.hasErrors()) {
             return "sign";
         }
 
-        userService.create(userCreateDTO.getUsername(), userCreateDTO.getPassword(), userCreateDTO.getNickname());
+        byte[] profileBytes = file.isEmpty() ? null : file.getBytes();
+        userService.create(userCreateDTO.getUsername(), userCreateDTO.getPassword(), userCreateDTO.getNickname(), profileBytes);
         return "redirect:/";
     }
 
@@ -81,6 +87,29 @@ public class UserController {
             return "redirect:/user/login";
         }
     }
+    @GetMapping("/user/info")
+    public String getInfo(HttpSession session, Model model) {
+        Object username = session.getAttribute("username");
+        if (username != null) {
+            UserMypageDTO userMypageDTO = mypageService.getUserMypageInfo(String.valueOf(username));
+            
+            // BLOB 데이터를 Base64로 변환하여 모델에 추가
+            byte[] profileBlob = userMypageDTO.getProfile();
+            String profileBase64 = blobToBase64(profileBlob);
+            userMypageDTO.setProfileBase64(profileBase64);
+            
+            model.addAttribute("user", userMypageDTO);
+            return "info";
+        } else {
+            return "redirect:/user/login";
+        }
+    }
+
+    // BLOB 데이터를 Base64 문자열로 변환하는 메서드
+    private String blobToBase64(byte[] blobData) {
+        return Base64.getEncoder().encodeToString(blobData);
+    }
+
     
 }
 
