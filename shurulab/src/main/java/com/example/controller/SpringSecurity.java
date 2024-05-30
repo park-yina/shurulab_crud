@@ -7,7 +7,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -22,18 +21,8 @@ public class SpringSecurity {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeRequests(authorize -> authorize
-                .requestMatchers(new AntPathRequestMatcher("/**")).permitAll() // 모든 요청에 대해 권한 없이 접근 허용
-            )
-            .formLogin(formLogin -> formLogin
-                .loginPage("/user/login") 
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/user/logout")
-                .permitAll()
+                .requestMatchers("/**").permitAll() // 그 외 모든 요청은 권한 없이 접근 허용
             );
-
         return http.build();
     }
 }
-
