@@ -88,26 +88,23 @@ public class UserController {
         }
     }
     @GetMapping("/user/info")
-    public String getInfo(HttpSession session, Model model) {
+    public String getInfo(HttpSession session, Model model) throws IOException {
         Object username = session.getAttribute("username");
         if (username != null) {
             UserMypageDTO userMypageDTO = mypageService.getUserMypageInfo(String.valueOf(username));
             
-            // BLOB 데이터를 Base64로 변환하여 모델에 추가
+            // BLOB 데이터를 가져와서 이미지 크기 조정 및 Base64 변환
             byte[] profileBlob = userMypageDTO.getProfile();
-            String profileBase64 = blobToBase64(profileBlob);
-            userMypageDTO.setProfileBase64(profileBase64);
+            if (profileBlob != null) {
+                String profileBase64 = ImgUtil.resizeImage(profileBlob, 300, 300); // 원하는 크기로 조정
+                userMypageDTO.setProfileBase64(profileBase64);
+            }
             
             model.addAttribute("user", userMypageDTO);
             return "info";
         } else {
             return "redirect:/user/login";
         }
-    }
-
-    // BLOB 데이터를 Base64 문자열로 변환하는 메서드
-    private String blobToBase64(byte[] blobData) {
-        return Base64.getEncoder().encodeToString(blobData);
     }
 
     

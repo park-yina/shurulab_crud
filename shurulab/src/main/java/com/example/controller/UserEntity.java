@@ -40,6 +40,6 @@ public class UserEntity {
     private String nickname;
     @Lob 
     @Basic(fetch = FetchType.LAZY)
-    @Column(length=100000)
+    @Column(length=300000)
     private byte[] profile; // 프로필 사진은 일단 이렇게 바이트로 한다는데 맞나
 }

@@ -5,12 +5,41 @@
     <title>게시판</title>
     <link rel="stylesheet" th:href="@{/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/style.css}">
+    <style>
+        .red-text {
+            color: red;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h2 th:text="'게시판 ' + ${boardType}"></h2>
-        <a th:href="@{|/post/new?boardType=${boardType}|}" class="btn btn-primary">새 글 작성</a>
+
+        <div th:if="${#lists.isEmpty(posts)}">
+            <p>게시물이 없습니다.</p>
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>게시물 제목</th>
+                    <th>작성자</th>
+                    <th>조회수</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="post : ${posts}">
+                    <td><a th:href="@{|/board/${boardType}/${post.id}|}" class="post-link" th:text="${post.title}"></a></td>
+                    <td th:text="${post.author}"></td>
+                    <td class="red-text" th:text="${post.views}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <a th:href="@{|/board/post/${boardType}|}" class="btn btn-primary">새 글 작성</a>
     </div>
     <script th:src="@{/bootstrap.min.js}"></script>
 </body>
 </html>
+
+
