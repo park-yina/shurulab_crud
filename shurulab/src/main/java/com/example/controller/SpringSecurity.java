@@ -16,13 +16,4 @@ public class SpringSecurity {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .authorizeRequests(authorize -> authorize
-                .requestMatchers("/**").permitAll() // 그 외 모든 요청은 권한 없이 접근 허용
-            );
-        return http.build();
-    }
 }

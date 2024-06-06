@@ -5,13 +5,15 @@ import org.springframework.stereotype.Service;
 import com.example.board.BoardType;
 import com.example.board.PostDTO;
 
-import jakarta.annotation.Nullable;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,7 +21,6 @@ public class BoardService {
 
     private final PostRepository postRepository;
 
-    @Autowired
     public BoardService(PostRepository postRepository) {
         this.postRepository = postRepository;
     }
@@ -58,10 +59,12 @@ public class BoardService {
 
         postEntity.setTitle(title);
         postEntity.setContent(content);
+        postEntity.setUpdatedDate(LocalDateTime.now(ZoneId.of("Asia/Seoul"))); // 수정 시각을 한국 시간으로 설정
         if (photo != null) {
             postEntity.setPhoto(photo);
         }
         postRepository.save(postEntity);
     }
+
 
 }

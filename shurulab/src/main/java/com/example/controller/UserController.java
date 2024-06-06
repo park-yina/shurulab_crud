@@ -1,6 +1,5 @@
 package com.example.controller;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,13 +14,12 @@ import com.example.dto.UserCreateDTO;
 import com.example.dto.UserLoginDTO;
 import com.example.dto.UserMypageDTO;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 import java.io.IOException;
-import java.util.Base64;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 @Controller
 @RequestMapping("")
@@ -34,7 +32,7 @@ public class UserController {
     @GetMapping("/user/signup")
     public String signup(Model model) {
         model.addAttribute("userCreateDTO", new UserCreateDTO());
-        return "sign";
+        return "sign.html";
     }
     @PostMapping("/user/signup")
     public String postSignup(@Valid UserCreateDTO userCreateDTO, BindingResult bindingResult, @RequestParam("profileImage") MultipartFile file) throws IOException {

@@ -1,9 +1,13 @@
 package com.example.controller;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +36,6 @@ public class BoardController {
     private final BoardService boardService;
     private final UserService userService;
     private final PostRepository postRepository;
-    
 	@GetMapping("")
 	public String board(HttpSession session) {
 		Object username=session.getAttribute("username");
@@ -98,7 +101,9 @@ public class BoardController {
     	    UserEditDTO author = userService.getUserName(String.valueOf(username));
     	    postEntity.setAuthor(author.getNickname());
     	    postEntity.setBoardType(boardType);
-    	    
+    	    LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+            postEntity.setCreatedDate(now);
+            postEntity.setUpdatedDate(now);
     	    // 게시물 저장
     	    postRepository.save(postEntity);
     	    
@@ -189,6 +194,7 @@ catch (IOException e) {
 
         return "redirect:/board";
     }
+
 
     @PostMapping("/delete/{postId}")
     public String deletePost (@PathVariable("postId") Long postId,HttpSession session,Model model) {
