@@ -51,3 +51,12 @@
 타임리프의 문자열 에러로 인코딩 과정에서 발생하는 오류임을 확인하고, ImgUtil이라는 클래스를 통해 미리 사진을 줄여 업로드하도록 코드를 수정하였습니다.<br>
 - [X] 닉네임 변경 이후 게시물 수정 오류<br>
 닉네임을 변경 시 본인에 대한 식별 오류가 발생하여, 자신이 닉네임 변경 이전에 작성한 글에 대한 삭제나 수정이 안되는 버그를 발견하여 수정완료했습니다.
+## Jar파일 생성 관련 이슈
+- [X] NoManifest에러<br>
+  gradle에 직접 `'Main-Class': 'com.example.demo.ShurulabCrudApplication'`코드 추가하여 해결<br>
+- [x] 이후 dto클래스의 getter/setter를 읽지 못하는 에러 발생<br>
+`	from {
+		configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+	}
+	duplicatesStrategy = 'exclude'`코드 추가로 에러 해결
+
