@@ -18,6 +18,10 @@
             <div th:text="${post.content}"></div>
         </div>
         <hr>
+                <div class="post-content">
+					<div th:text="' 마지막 수정일자:'"></div>
+                    <div th:text="${post.updatedDate}"></div>
+<hr>
         <div class="form-group">
             <label for="profileImage">첨부사진</label>
             <div>

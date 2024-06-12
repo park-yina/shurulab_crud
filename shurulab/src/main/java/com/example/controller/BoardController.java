@@ -1,19 +1,26 @@
 package com.example.controller;
 
 import java.io.IOException;
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
 
+import com.example.dto.PostDTO;
+import com.example.entity.BoardEntity;
+import com.example.repository.BoardRepository;
+import com.example.util.ImgUtil;
+import com.example.entity.PostEntity;
+import com.example.repository.PostRepository;
+import com.example.service.BoardService;
+import com.example.service.UserService;
+import com.example.dto.UserEditDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,8 +29,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.board.BoardType;
-import com.example.board.PostDTO;
-import com.example.dto.UserEditDTO;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -36,25 +41,25 @@ public class BoardController {
     private final BoardService boardService;
     private final UserService userService;
     private final PostRepository postRepository;
-	@GetMapping("")
-	public String board(HttpSession session) {
-		Object username=session.getAttribute("username");
-		if(username!=null) {
-			return "board";
-		}else {
+    @GetMapping("")
+    public String board(HttpSession session) {
+        Object username=session.getAttribute("username");
+        if(username!=null) {
+            return "board";
+        }else {
             return "redirect:/user/login";
         }
-		
-	}
+
+    }
 
     @GetMapping("/{boardType}")
     public String getBoardPosts(@PathVariable("boardType") String boardType, Model model) {
         BoardType enumBoardType = BoardType.valueOf(boardType.toUpperCase());
         model.addAttribute("boardType", enumBoardType);
 
-            List<PostEntity> posts = postRepository.findByBoardType(boardType);
-            model.addAttribute("posts", posts);
- 
+        List<PostEntity> posts = postRepository.findByBoardType(boardType);
+        model.addAttribute("posts", posts);
+
 
         return "detail_board";
     }
@@ -63,58 +68,58 @@ public class BoardController {
     @GetMapping("/post/{boardType}")
     public String showPost(@PathVariable("boardType") String boardType, Model model, HttpSession session) {
         BoardType enumBoardType = BoardType.valueOf(boardType.toUpperCase());
-		Object username=session.getAttribute("username");
-		if(username==null) {
+        Object username=session.getAttribute("username");
+        if(username==null) {
             return "redirect:/user/login";
-		}
-		else {
-      model.addAttribute("boardType", enumBoardType);
+        }
+        else {
+            model.addAttribute("boardType", enumBoardType);
 
-      model.addAttribute("postDTO", new PostDTO());
+            model.addAttribute("postDTO", new PostDTO());
 //        if (enumBoardType == BoardType.A) { // BoardType.A와 비교
 //            List<PostEntity> posts = postRepository.findAll(); // 모든 게시물 가져오기
 //            model.addAttribute("posts", posts);
 //        }
 
-        return "new_post";
+            return "new_post";
+        }
     }
-   }
 
 
     @PostMapping("/post/{boardType}")
     public String createPostForABoard(@PathVariable("boardType") String boardType,
-                                       @RequestParam("title") String title,
-                                       @RequestParam("content") String content,
-                                       @RequestParam("photo") MultipartFile photo
-                                       ,
-                                       HttpSession session
-                                       ) {
-    	try {
-    	    Object username = session.getAttribute("username");
-    	    byte[] profileBytes = photo.isEmpty() ? null : photo.getBytes();
+                                      @RequestParam("title") String title,
+                                      @RequestParam("content") String content,
+                                      @RequestParam("photo") MultipartFile photo
+            ,
+                                      HttpSession session
+    ) {
+        try {
+            Object username = session.getAttribute("username");
+            byte[] profileBytes = photo.isEmpty() ? null : photo.getBytes();
 
-    	    // 게시물 엔티티 생성 및 필드 설정
-    	    PostEntity postEntity = new PostEntity();
-    	    postEntity.setTitle(title);
-    	    postEntity.setContent(content);
-    	    postEntity.setPhoto(profileBytes);
-    	    UserEditDTO author = userService.getUserName(String.valueOf(username));
-    	    postEntity.setAuthor(author.getNickname());
-    	    postEntity.setBoardType(boardType);
-    	    LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+            // 게시물 엔티티 생성 및 필드 설정
+            PostEntity postEntity = new PostEntity();
+            postEntity.setTitle(title);
+            postEntity.setContent(content);
+            postEntity.setPhoto(profileBytes);
+            UserEditDTO author = userService.getUserName(String.valueOf(username));
+            postEntity.setAuthor(author.getNickname());
+            postEntity.setBoardType(boardType);
+            LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
             postEntity.setCreatedDate(now);
             postEntity.setUpdatedDate(now);
-    	    // 게시물 저장
-    	    postRepository.save(postEntity);
-    	    
-    	    return "redirect:/";
-    	}
-catch (IOException e) {
-                e.printStackTrace();
-                return "error";
-            }
+            // 게시물 저장
+            postRepository.save(postEntity);
+
+            return "redirect:/";
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return "error";
+        }
     }
- // findById를 사용한 코드
+    // findById를 사용한 코드
     @GetMapping("/{boardType}/{postId}")
     public String viewPostDetail(@PathVariable("boardType") String boardType,
                                  @PathVariable("postId") Long postId, Model model) {
@@ -168,16 +173,16 @@ catch (IOException e) {
         }
     }
     @PostMapping("/edit/{postId}")
-    public String updatePost(@PathVariable("postId") Long postId, 
-                             @RequestParam("title") String title, 
-                             @RequestParam("content") String content, 
-                             @RequestParam("photo") MultipartFile photo, 
-                             HttpSession session, 
+    public String updatePost(@PathVariable("postId") Long postId,
+                             @RequestParam("title") String title,
+                             @RequestParam("content") String content,
+                             @RequestParam("photo") MultipartFile photo,
+                             HttpSession session,
                              Model model) {
         if (session.getAttribute("username") == null) {
             return "redirect:/user/login";
         }
-        
+
         String author = boardService.findAuthorById(postId);
         String author2 = userService.getUserName(String.valueOf(session.getAttribute("username"))).getNickname();
         if (!author.equalsIgnoreCase(author2)) {
@@ -198,23 +203,22 @@ catch (IOException e) {
 
     @PostMapping("/delete/{postId}")
     public String deletePost (@PathVariable("postId") Long postId,HttpSession session,Model model) {
-    	if(session.getAttribute("username")==null) {
-    		return "redirect:/user/login";
-    	}
-    	else {
-    		String Author=boardService.findAuthorById(postId);
-    		String Author2=userService.getUserName(String.valueOf(session.getAttribute("username"))).getNickname();
-    		if(Author.equalsIgnoreCase(Author2)) {
-    			boardService.deletePostById(postId);
-    		}
-    		else {
+        if(session.getAttribute("username")==null) {
+            return "redirect:/user/login";
+        }
+        else {
+            String Author=boardService.findAuthorById(postId);
+            String Author2=userService.getUserName(String.valueOf(session.getAttribute("username"))).getNickname();
+            if(Author.equalsIgnoreCase(Author2)) {
+                boardService.deletePostById(postId);
+            }
+            else {
                 model.addAttribute("error", "자신이 작성한 글이 아닙니다.");
                 return "error";
-    		}
-    	}
-		return "redirect:/board";
-    	
+            }
+        }
+        return "redirect:/board";
+
     }
 
 }
-

@@ -1,6 +1,10 @@
 package com.example.controller;
 
-import lombok.RequiredArgsConstructor;
+
+import java.io.IOException;
+
+import com.example.service.MypageService;
+import com.example.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -10,31 +14,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.util.ImgUtil;
 import com.example.dto.UserCreateDTO;
 import com.example.dto.UserLoginDTO;
 import com.example.dto.UserMypageDTO;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-
-import java.io.IOException;
-
-
+import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequestMapping("")
+@RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService; // UserService 주입
     private final MypageService mypageService;
-
-    @GetMapping("/user/signup")
+    @GetMapping("/signup")
     public String signup(Model model) {
-        model.addAttribute("userCreateDTO", new UserCreateDTO());
-        return "sign.html";
+    	model.addAttribute("userCreateDTO", new UserCreateDTO());
+        return "sign";
     }
-    @PostMapping("/user/signup")
+    @PostMapping("/signup")
     public String postSignup(@Valid UserCreateDTO userCreateDTO, BindingResult bindingResult, @RequestParam("profileImage") MultipartFile file) throws IOException {
         if (bindingResult.hasErrors()) {
             return "sign";
@@ -44,14 +45,13 @@ public class UserController {
         userService.create(userCreateDTO.getUsername(), userCreateDTO.getPassword(), userCreateDTO.getNickname(), profileBytes);
         return "redirect:/";
     }
-
-    @GetMapping("/user/login")
+    @GetMapping("/login")
     public String login(Model model) {
         model.addAttribute("userLoginDTO", new UserLoginDTO());
         return "login";
     }
 
-    @PostMapping("/user/login")
+    @PostMapping("/login")
     public String postLogin(@Valid UserLoginDTO userLoginDTO, BindingResult bindingResult, HttpSession session) {
         if (bindingResult.hasErrors()) {
             return "login";
@@ -66,26 +66,7 @@ public class UserController {
             return "login"; // 로그인 실패 시 로그인 페이지로 이동
         }
     }
-
-    @GetMapping("/user/logout")
-    public String logout(HttpSession session) {
-        session.invalidate(); // 로그아웃 시 세션 무효화
-        return "redirect:/user/login?logout=true";
-    }
-
-    @GetMapping("/user/mypage")
-    public String getMypage(HttpSession session, Model model) {
-        Object username = session.getAttribute("username");
-
-        if (username != null) {
-            UserMypageDTO userMypageDTO = mypageService.getUserMypageInfo(String.valueOf(username));
-            model.addAttribute("userMypageDTO", userMypageDTO);
-            return "mypage";
-        } else {
-            return "redirect:/user/login";
-        }
-    }
-    @GetMapping("/user/info")
+    @GetMapping("/info")
     public String getInfo(HttpSession session, Model model) throws IOException {
         Object username = session.getAttribute("username");
         if (username != null) {
@@ -104,8 +85,4 @@ public class UserController {
             return "redirect:/user/login";
         }
     }
-
-    
 }
-
-

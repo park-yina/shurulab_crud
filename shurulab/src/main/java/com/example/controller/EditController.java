@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.service.UserService;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+
 
 import com.example.dto.EditPasswordDTO;
 import com.example.dto.UserEditDTO;
@@ -34,7 +36,7 @@ public class EditController {
     public String edit(Model model, HttpSession session) {
         Object username = session.getAttribute("username");
         if (username != null) {
-            UserEditDTO userEditDTO = userService.getUserName(String.valueOf(username));
+           UserEditDTO userEditDTO = userService.getUserName(String.valueOf(username));
             model.addAttribute("userEditDTO", userEditDTO);
             return "nickname_edit";
         } else {
