@@ -42,4 +42,5 @@ public class PostEntity {
 
     @LastModifiedDate
     private LocalDateTime updatedDate;
+    private String username;
 }

@@ -106,6 +106,7 @@ public class BoardController {
             UserEditDTO author = userService.getUserName(String.valueOf(username));
             postEntity.setAuthor(author.getNickname());
             postEntity.setBoardType(boardType);
+            postEntity.setUsername(String.valueOf(username));
             LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
             postEntity.setCreatedDate(now);
             postEntity.setUpdatedDate(now);
