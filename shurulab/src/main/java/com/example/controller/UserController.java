@@ -66,7 +66,7 @@ public class UserController {
             return "login"; // 로그인 실패 시 로그인 페이지로 이동
         }
     }
-        @GetMapping("/user/logout")
+        @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate(); // 로그아웃 시 세션 무효화
         return "redirect:/user/login?logout=true";
